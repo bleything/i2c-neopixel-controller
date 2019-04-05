@@ -44,11 +44,11 @@ works for me but may be a bad idea; please open an issue if you have objections.
 Protocol Reference
 --------------------------------------------------------------------------------
 
-| Command | Args | Description               |
-|---------|------|---------------------------|
-| `0x00`  | None | Turns off all of the LEDs |
-|         |      |                           |
-
+| Command | Args                  | Description                             |
+|---------|-----------------------|-----------------------------------------|
+| `0x00`  | None                  | Turns off all of the LEDs               |
+| `0x01`  | 1 byte                | Sets the maximum brightness             |
+| `0x02`  | 4 bytes: LED, R, G, B | Sets the given LED's R, G, and B values |
 
 License
 --------------------------------------------------------------------------------
