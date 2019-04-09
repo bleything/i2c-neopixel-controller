@@ -41,6 +41,14 @@ additional bytes. When the handler is done the buffer is flushed. This means
 that you must send each command in a single, self-contained i2c message. This
 works for me but may be a bad idea; please open an issue if you have objections.
 
+You can enable and disable quick-and-dirty color correction using the `0x03` and
+`0x04` commands, respectively. The gamma table is precalculated for your
+convenience. See [this page][gamma] for more information. Color correction is
+disabled by default.
+
+[gamma]: https://learn.adafruit.com/led-tricks-gamma-correction/the-quick-fix
+
+
 Protocol Reference
 --------------------------------------------------------------------------------
 
@@ -49,6 +57,8 @@ Protocol Reference
 | `0x00`  | None                  | Turns off all of the LEDs               |
 | `0x01`  | 1 byte                | Sets the maximum brightness             |
 | `0x02`  | 4 bytes: LED, R, G, B | Sets the given LED's R, G, and B values |
+| `0x03`  | None                  | Enables color correction                |
+| `0x04`  | None                  | Disables color correction               |
 
 License
 --------------------------------------------------------------------------------

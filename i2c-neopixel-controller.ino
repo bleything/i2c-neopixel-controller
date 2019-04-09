@@ -7,6 +7,7 @@
 
 #include <Adafruit_NeoPixel.h>
 #include <Wire.h>
+#include "gamma.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Configuration
@@ -17,7 +18,7 @@
 #define I2C_ADDRESS 0x45
 
 // the pin that's connected to DIN on your NeoPixels
-#define NEOPIXEL_PIN 1
+#define NEOPIXEL_PIN 3
 
 // self-explanatory
 #define NEOPIXEL_COUNT 9
@@ -46,6 +47,9 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEOPI
 // the command handlers. The updatePixels() function iterates over this and
 // sends commands to the LEDs
 byte pixelState[NEOPIXEL_COUNT][3];
+
+// should we pass values through the gamma table first?
+bool colorCorrection = false;
 
 void setup() {
   // for debugging!
@@ -101,6 +105,12 @@ uint32_t pixelColor(int pixel) {
   byte g = pixelState[pixel][1];
   byte b = pixelState[pixel][2];
 
+  if (colorCorrection) {
+    r = pgm_read_byte(&gamma_table[r]);
+    g = pgm_read_byte(&gamma_table[g]);
+    b = pgm_read_byte(&gamma_table[b]);
+  }
+
   return pixels.Color(r, g, b);
 }
 
@@ -130,6 +140,8 @@ void updatePixels() {
 // * 0x01 - set the maximum brightness. Takes one arg.
 // * 0x02 - set a specific LED to the given color. takes four args: addr, red,
 //          green, blue
+// * 0x03 - enable color correction
+// * 0x04 - disable color correction
 void receiveEvent(int numBytes) {
   int command = Wire.read();
 
@@ -175,6 +187,16 @@ void receiveEvent(int numBytes) {
       pixelState[led][1] = g;
       pixelState[led][2] = b;
     }
+    break;
+
+  case 0x03:
+    Serial.println("enabling color correction");
+    colorCorrection = true;
+    break;
+
+  case 0x04:
+    Serial.println("disabling color correction");
+    colorCorrection = false;
     break;
 
   default:
